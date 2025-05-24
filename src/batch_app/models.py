@@ -40,11 +40,11 @@ class Batch(models.Model):
         verbose_name='Start Date'
     )
 
-    # status = models.PositiveSmallIntegerField(
-    #     choices=BATCH_STATUS,
-    #     default=0,
-    #     verbose_name='Status'
-    # )
+    status = models.PositiveSmallIntegerField(
+        choices=BATCH_STATUS,
+        default=0,
+        verbose_name='Status'
+    )
     
     event = models.ForeignKey(
         Event,

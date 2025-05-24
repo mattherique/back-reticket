@@ -4,12 +4,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from src.batch_app.models import Batch
-from src.batch_app.selectors import get_all_batches, get_batch
+from src.batch_app.selectors import get_all_batches, get_batch, get_batches_by_filter
 from src.batch_app.services import create_batch, update_batch
 from src.batch_app.serializers import BatchSerializer
 from rest_framework import viewsets
 
-class ListBatches(APIView):
+class ListBatchesView(APIView):
 
     class_model = Batch
     serializer_class = BatchSerializer
@@ -18,6 +18,18 @@ class ListBatches(APIView):
         batch = get_all_batches()
         serializer = BatchSerializer(batch, many=True)
         return Response({"Batch": serializer.data})
+    
+class ListBatchesByView(APIView):
+    class_model = Batch
+    serializer_class = BatchSerializer
+
+    def get(self, request):
+        batch = get_batches_by_filter(request.query_params)
+        serializer = BatchSerializer(batch, many=True)
+        return Response({
+            "count": len(batch),
+            "Batch": serializer.data
+        })
 
 class SingleBatchView(APIView):
 

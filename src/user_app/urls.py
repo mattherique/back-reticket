@@ -1,7 +1,8 @@
-from django.contrib import admin
-from django.urls import path, include
-from views import user_view
+from django.urls import path
+from src.user_app.views import ListUsersView, SingleUserView, ListUsersByView
 
 urlpatterns = [
-    path('user', user_view),
+    path('users', ListUsersView.as_view(), name='list-users'),
+    path('user', SingleUserView.as_view(), name='single-user'),
+    path('users/by/', ListUsersByView.as_view(), name='single-user-with-id'),
 ]

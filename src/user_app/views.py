@@ -1,62 +1,72 @@
 from django.core.exceptions import ObjectDoesNotExist
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from src.user_app.models import User
+from src.user_app.selectors import get_all_users, get_user, get_users_by_filter
+from src.user_app.services import create_user, update_user
 from src.user_app.serializers import UserSerializer
 
-@api_view(['GET', 'POST', 'PUT', 'DELETE'])
-def user_view(request):
-    try:
-        if request.method == 'GET':
-            user = User.objects.get(pk=request.query_params.get('id'))
+
+class ListUsersView(APIView):
+    class_model = User
+    serializer_class = UserSerializer
+
+    def get(self, request):
+        users = get_all_users(request.query_params)
+        serializer = UserSerializer(users, many=True)
+        return Response(
+            {
+                "users": serializer.data,
+                "count": len(users),
+            }
+        )
+
+
+class ListUsersByView(APIView):
+    class_model = User
+    serializer_class = UserSerializer
+
+    def get(self, request):
+        users = get_users_by_filter(request.query_params)
+        serializer = UserSerializer(users, many=True)
+        return Response(
+            {
+                "count": len(users),
+                "users": serializer.data,
+            }
+        )
+
+
+class SingleUserView(APIView):
+    class_model = User
+    serializer_class = UserSerializer
+
+    def get(self, request, pk):
+        try:
+            user = get_user(pk)
+            if not user:
+                return Response({"error": "User not found"}, status=404)
             serializer = UserSerializer(user)
-            return Response(serializer.data, status=200)
+            return Response(serializer.data)
+        except ObjectDoesNotExist:
+            return Response({"error": "User not found"}, status=404)
 
-        elif request.method == 'POST':
-            user_data = request.data
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+        create_user(data)
+        return Response(status=201)
 
-            new_user = User.objects.create(
-                username=user_data.get('username'),
-                email=user_data.get('email'),
-                is_active=user_data.get('is_active'),
-                date_joined=user_data.get('date_joined')
-            )
-
-            serializer = UserSerializer(new_user)
-
-            return Response(serializer.data, status=201)
-
-        elif request.method == 'PUT':
-            user_data = request.data
-
-            user = User.objects.get(pk=user_data.get('id'))
-
-            if "username" in user_data:
-                user.username = user_data.get('username')
-            if "email" in user_data:
-                user.email = user_data.get('email')
-            if "is_active" in user_data:
-                user.is_active = user_data.get('is_active')
-            if "date_joined" in user_data:
-                user.date_joined = user_data.get('date_joined')
-
-            user.save()
-            return Response(status=200)
-
-        elif request.method == 'DELETE':
-            user_data = request.data
-
-            user = User.objects.get(pk=user_data.get('id'))
-
-            if user.is_active:
-                user.is_active = False
-                user.save()
-
-            return Response(status=200)
-
-    except ObjectDoesNotExist:
-        return Response(status=400)
-
-    except Exception as e:
-        return Response({'error': str(e)}, status=500)
+    def put(self, request, pk):
+        try:
+            user = get_user(pk)
+            if not user:
+                return Response({"error": "User not found"}, status=404)
+            serializer = UserSerializer(user, data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            update_user(user, serializer.validated_data)
+            return Response(status=204)
+        except ObjectDoesNotExist:
+            return Response({"error": "User not found"}, status=404)

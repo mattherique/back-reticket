@@ -11,4 +11,4 @@ BATCH_STATUS = [
     (3, 'Expired'),
     (4, 'Completed'),
     (5, 'Excluded'),
-],
+]
