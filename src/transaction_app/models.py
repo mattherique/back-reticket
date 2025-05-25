@@ -17,6 +17,12 @@ class Transaction(models.Model):
         on_delete=models.CASCADE,
         related_name='transactions'
     )
+    payment_method = models.IntegerField(choices=[
+        (1, 'Credit Card'),
+        (2, 'Debit Card'),
+        (3, 'Pix'),
+        (4, 'Billet'),
+    ])
 
     class Meta:
         db_table = 'db_transactions'
