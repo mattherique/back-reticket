@@ -82,11 +82,7 @@ class UserLoginView(APIView):
     authentication_classes = [TokenAuthentication]
 
     def post(self, request):
-        print(request.data)
-        print(User.objects.all()[2].password)
-
         user = authenticate(username=request.data["email"], password=request.data['password'])
-        print(user)
         if user:
             token, created = Token.objects.get_or_create(user=user)
             return Response({'token': token.key})
