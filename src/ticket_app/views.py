@@ -1,27 +1,31 @@
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 
 from src.ticket_app.models import Ticket
 from src.ticket_app.selectors import get_all_tickets, get_ticket, get_tickets_by_filter
 from src.ticket_app.services import create_ticket, update_ticket
 from src.ticket_app.serializers import TicketSerializer
+from src.ticket_app.permissions import IsTicketOwner
 
 class ListTicketsView(APIView):
     class_model = Ticket
     serializer_class = TicketSerializer
+    permission_classes = [IsAuthenticated, IsTicketOwner]
 
     def get(self, request):
-        tickets = get_all_tickets()
+        tickets = get_all_tickets(params_user=request.user)
         serializer = TicketSerializer(tickets, many=True)
         return Response({"Ticket": serializer.data})
 
 class ListTicketsByView(APIView):
     class_model = Ticket
     serializer_class = TicketSerializer
+    permission_classes = [IsAuthenticated, IsTicketOwner]
 
     def get(self, request):
-        tickets = get_tickets_by_filter(request.query_params)
+        tickets = get_tickets_by_filter(request.query_params, user=request.user)
         serializer = TicketSerializer(tickets, many=True)
         return Response({
             "count": len(tickets),
@@ -31,10 +35,12 @@ class ListTicketsByView(APIView):
 class SingleTicketView(APIView):
     class_model = Ticket
     serializer_class = TicketSerializer
+    permission_classes = [IsAuthenticated, IsTicketOwner]
 
     def get(self, request, pk):
         try:
             ticket = get_ticket(pk)
+            self.check_object_permissions(request, ticket)
             serializer = TicketSerializer(ticket)
             return Response(serializer.data)
         except ObjectDoesNotExist:

@@ -1,17 +1,20 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
 
-class User(models.Model):
+class User(AbstractUser):
     name = models.CharField(max_length=128)
+    email = models.EmailField(max_length=254, unique=True, blank=True)
     active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    pass_hash = models.CharField(max_length=256)
-    sal = models.CharField(max_length=128)
     status = models.CharField(max_length=32, choices=[
         ('active', 'Active'),
         ('inactive', 'Inactive')
     ], default='active')
     location = models.CharField(max_length=256, blank=True, null=True)
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
 
     class Meta:
         db_table = 'db_users'

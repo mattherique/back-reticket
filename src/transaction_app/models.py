@@ -22,7 +22,7 @@ class Transaction(models.Model):
         (2, 'Debit Card'),
         (3, 'Pix'),
         (4, 'Billet'),
-    ])
+    ], null=True)
 
     class Meta:
         db_table = 'db_transactions'

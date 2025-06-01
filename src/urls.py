@@ -21,6 +21,7 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('accounts/', include('django.contrib.auth.urls')),
     path('event_app/', include('src.event_app.urls')),
     path('batch_app/', include('src.batch_app.urls')),
     path('ticket_app/', include('src.ticket_app.urls')),

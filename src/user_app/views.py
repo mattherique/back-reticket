@@ -7,6 +7,13 @@ from src.user_app.selectors import get_all_users, get_user, get_users_by_filter
 from src.user_app.services import create_user, update_user
 from src.user_app.serializers import UserSerializer
 
+from rest_framework.authtoken.models import Token
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.authentication import TokenAuthentication
+from django.contrib.auth import authenticate
+from rest_framework.permissions import AllowAny
+from rest_framework.generics import CreateAPIView
 
 class ListUsersView(APIView):
     class_model = User
@@ -70,3 +77,23 @@ class SingleUserView(APIView):
             return Response(status=204)
         except ObjectDoesNotExist:
             return Response({"error": "User not found"}, status=404)
+
+class UserLoginView(APIView):
+    authentication_classes = [TokenAuthentication]
+
+    def post(self, request):
+        print(request.data)
+        print(User.objects.all()[2].password)
+
+        user = authenticate(username=request.data["email"], password=request.data['password'])
+        print(user)
+        if user:
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({'token': token.key})
+        else:
+            return Response({'error': 'Invalid credentials'}, status=401)
+        
+class UserRegistrationView(CreateAPIView):
+    class_model = User
+    serializer_class = UserSerializer
+    permission_classes = [AllowAny]

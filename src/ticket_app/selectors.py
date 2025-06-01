@@ -3,10 +3,10 @@ from src.ticket_app.models import Ticket
 from typing import Iterable
 import json
 
-def get_all_tickets() -> Iterable[Ticket]:
-    return Ticket.objects.all()
+def get_all_tickets(params_user) -> Iterable[Ticket]:
+    return Ticket.objects.filter(user=params_user)
 
-def get_tickets_by_filter(params) -> Iterable[Ticket]:
+def get_tickets_by_filter(params: dict, user) -> Iterable[Ticket]:
     params_filter = {}
     if params:
         params_filter = json.loads(params["filter_by"])
