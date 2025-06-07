@@ -1,5 +1,5 @@
 from django.db import models
-from src.batch_app.models import Batch
+from src.event_app.models import Event
 from src.order_app.models import Order
 from src.user_app.models import User
 
@@ -13,11 +13,12 @@ class Ticket(models.Model):
         (3, 'Expired'),
         (4, 'Excluded'),
     ])
-    batch = models.ForeignKey(Batch, on_delete=models.CASCADE, related_name='tickets')
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='tickets', null=True)
     order = models.ForeignKey(
         Order,
         on_delete=models.CASCADE,
-        related_name='tickets'
+        related_name='tickets',
+        null=True,
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -25,6 +26,13 @@ class Ticket(models.Model):
         User,
         on_delete=models.CASCADE,
         related_name='tickets'
+    )
+    price_blocked = models.BooleanField(default=False)
+    buyer = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='bought_tickets',
+        null=True,
     )
     
     class Meta:

@@ -47,10 +47,7 @@ class SingleTicketView(APIView):
             return Response({"error": "Ticket not found"}, status=404)
 
     def post(self, request):
-        serializer = TicketSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        data = serializer.validated_data
-        create_ticket(data)
+        create_ticket(request.data)
         return Response(status=201)
 
     def put(self, request, pk):

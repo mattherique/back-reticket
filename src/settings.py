@@ -34,7 +34,6 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'src.event_app',
-    'src.batch_app',
     'src.ticket_app',
     'src.order_app',
     'src.user_app',

@@ -79,6 +79,7 @@ class SingleUserView(APIView):
             return Response({"error": "User not found"}, status=404)
 
 class UserLoginView(APIView):
+    serializer_class = UserSerializer
     authentication_classes = [TokenAuthentication]
 
     def post(self, request):
