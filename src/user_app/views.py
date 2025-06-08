@@ -10,7 +10,6 @@ from src.user_app.serializers import UserSerializer
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.authentication import TokenAuthentication
 from django.contrib.auth import authenticate
 from rest_framework.permissions import AllowAny
 from rest_framework.generics import CreateAPIView
@@ -80,13 +79,19 @@ class SingleUserView(APIView):
 
 class UserLoginView(APIView):
     serializer_class = UserSerializer
-    authentication_classes = [TokenAuthentication]
 
     def post(self, request):
         user = authenticate(username=request.data["email"], password=request.data['password'])
+
         if user:
             token, created = Token.objects.get_or_create(user=user)
-            return Response({'token': token.key})
+            return Response({
+                'token': token.key, 
+                'id': user.id, 
+                'email': user.email, 
+                'name': user.name,
+                'phone': user.phone,
+            }, status=200)
         else:
             return Response({'error': 'Invalid credentials'}, status=401)
         

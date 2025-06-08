@@ -27,7 +27,11 @@ SECRET_KEY = 'django-insecure-2cpfa&rn-7-$^qdl%ws)x@3ba1*(sqip*ecntocmiyv1(d%7$4
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost:3000',
+    '127.0.0.1',
+    'localhost'
+]
 
 
 # Application definition
@@ -45,10 +49,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'drf_spectacular',
-    'rest_framework.authtoken'
+    'rest_framework.authtoken',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -157,3 +163,8 @@ DEFAULT_FROM_EMAIL = mail
 EMAIL_SUBJECT_PREFIX = 'Password Recover'
 
 AUTH_USER_MODEL = 'user_app.User'
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+]

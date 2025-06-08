@@ -12,6 +12,7 @@ class User(AbstractUser):
         ('inactive', 'Inactive')
     ], default='active')
     location = models.CharField(max_length=256, blank=True, null=True)
+    phone = models.CharField(max_length=15, blank=True, null=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
